@@ -6,7 +6,7 @@ public class RpnCalculator {
 
         int result;
 
-        if (!containsOperation(input)) {
+        if (!isOperator(input)) {
 
             input = input.replaceAll(BLANK_SPACE, "");
 
@@ -14,24 +14,34 @@ public class RpnCalculator {
 
         } else {
 
-            String[] split = input.split(BLANK_SPACE);
-            int opIndex = getIndexFirstOperation(split);
-            result = Integer.parseInt(split[opIndex - 2]);
+            String[] inputs = input.split(BLANK_SPACE);
+            int opIndex = getIndexFirstOperation(inputs);
+            result = Integer.parseInt(inputs[opIndex - 2]);
 
-            for (int i = 0; i < split.length; i++) {
-                if (isOperator(split[i])) {
-                    result = operate(split[i],  result, Integer.parseInt(split[i - 1]));
+            for (int i = 0; i < inputs.length; i++) {
+                if (i == 0 && isOperator(inputs[i])) {
+
+                    result = operate(inputs[i], result, Integer.parseInt(inputs[i - 1]));
+
+                } else {
+                    if (isOperator(inputs[i]) && !isOperator(inputs[i - 1])) {
+
+                        result = operate(inputs[i], result, Integer.parseInt(inputs[i - 1]));
+
+                    } else if (isOperator(inputs[i])) {
+                        result = operate(inputs[i], result, Integer.parseInt(inputs[0]));
+
+                    }
                 }
             }
         }
-
 
         return result;
     }
 
     private int getIndexFirstOperation(String[] input) {
         for (int i = 0; i < input.length; i++) {
-            if(isOperator(input[i])){
+            if (isOperator(input[i])) {
                 return i;
             }
         }
@@ -66,8 +76,4 @@ public class RpnCalculator {
         return result;
     }
 
-    private boolean containsOperation(String input) {
-        return input.contains("+") || input.contains("-")
-                || input.contains("*") || input.contains("/");
-    }
 }
