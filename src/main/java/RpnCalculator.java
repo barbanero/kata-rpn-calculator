@@ -1,6 +1,6 @@
 public class RpnCalculator {
 
-    public static final String BLANK_SPACE = "\\s";
+    private static final String BLANK_SPACE = "\\s";
 
     public int calculate(String input) {
 
@@ -15,22 +15,18 @@ public class RpnCalculator {
         } else {
 
             String[] inputs = input.split(BLANK_SPACE);
-            int opIndex = getIndexFirstOperation(inputs);
-            result = Integer.parseInt(inputs[opIndex - 2]);
+
+            result = getFirstNumberToOperate(inputs);
 
             for (int i = 0; i < inputs.length; i++) {
+
                 if (i == 0 && isOperator(inputs[i])) {
-
-                    result = operate(inputs[i], result, Integer.parseInt(inputs[i - 1]));
-
+                    result = operate(result, inputs[i], Integer.parseInt(inputs[i - 1]));
                 } else {
                     if (isOperator(inputs[i]) && !isOperator(inputs[i - 1])) {
-
-                        result = operate(inputs[i], result, Integer.parseInt(inputs[i - 1]));
-
+                        result = operate(result, inputs[i], Integer.parseInt(inputs[i - 1]));
                     } else if (isOperator(inputs[i])) {
-                        result = operate(inputs[i], result, Integer.parseInt(inputs[0]));
-
+                        result = operate(result, inputs[i], Integer.parseInt(inputs[0]));
                     }
                 }
             }
@@ -48,12 +44,18 @@ public class RpnCalculator {
         return 0;
     }
 
+    private int getFirstNumberToOperate(String[] inputs) {
+
+        int opIndex = getIndexFirstOperation(inputs);
+        return Integer.parseInt(inputs[opIndex - 2]);
+    }
+
     private boolean isOperator(String input) {
         return input.contains("+") || input.contains("-")
                 || input.contains("*") || input.contains("/");
     }
 
-    private int operate(String operator, int number1, int number2) {
+    private int operate(int number1, String operator, int number2) {
         int result;
         switch (operator.charAt(0)) {
             case '+':
